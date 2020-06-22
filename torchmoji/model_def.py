@@ -38,7 +38,7 @@ def torchmoji_feature_encoding(weight_path, return_attention=False):
     return model
 
 
-def torchmoji_emojis(weight_path, return_attention=False):
+def torchmoji_emojis(self, weight_path, return_attention=False):
     """ Loads the pretrained torchMoji model for extracting features
         from the penultimate feature layer. In this way, it transforms
         the text into its emotional encoding.
