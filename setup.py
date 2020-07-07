@@ -7,6 +7,7 @@ setup(
     description='torchMoji',
     include_package_data=True,
     install_requires=[
+        'torch',
         'emoji==0.4.5',
         'numpy==1.13.1',
         'scipy==0.19.1',
