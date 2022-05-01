@@ -250,8 +250,8 @@ class TorchMoji(nn.Module):
             outputs = reorered
 
         # Adapt return format if needed
-        if return_tensor:
-            outputs = outputs.data
+        # if return_tensor:
+        #     outputs = outputs.data
         if return_numpy:
             outputs = outputs.data.numpy()
 

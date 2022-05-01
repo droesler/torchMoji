@@ -86,9 +86,6 @@ def load_benchmark(path, vocab, extend_with=0):
     # tokens from the training dataset.
     texts, labels, added = st.split_train_val_test(texts,
                                                    labels,
-                                                   [data['train_ind'],
-                                                    data['val_ind'],
-                                                    data['test_ind']],
                                                    extend_with=extend_with)
     return {'texts': texts,
             'labels': labels,
@@ -521,7 +518,8 @@ def fit_model(model, loss_op, optim_op, train_gen, val_gen, epochs,
     torch.save(model.state_dict(), checkpoint_path)
 
     model.eval()
-    best_loss = np.mean([calc_loss(loss_op, model(Variable(xv)), Variable(yv)).data.cpu().numpy()[0] for xv, yv in val_gen])
+    # best_loss = np.mean([calc_loss(loss_op, model(Variable(xv)), Variable(yv)).data.cpu().numpy()[0] for xv, yv in val_gen])
+    best_loss = np.mean([calc_loss(loss_op, model(Variable(xv)), Variable(yv)).data.cpu().numpy() for xv, yv in val_gen])
     print("original val loss", best_loss)
 
     epoch_without_impr = 0
@@ -539,13 +537,13 @@ def fit_model(model, loss_op, optim_op, train_gen, val_gen, epochs,
             optim_op.step()
 
             acc = evaluate_using_acc(model, [(X_train.data, y_train.data)])
-            print("== Epoch", epoch, "step", i, "train loss", loss.data.cpu().numpy()[0], "train acc", acc)
+            print("== Epoch", epoch, "step", i, "train loss", loss.data.cpu().numpy(), "train acc", acc)
 
         model.eval()
         acc = evaluate_using_acc(model, val_gen)
         print("val acc", acc)
 
-        val_loss = np.mean([calc_loss(loss_op, model(Variable(xv)), Variable(yv)).data.cpu().numpy()[0] for xv, yv in val_gen])
+        val_loss = np.mean([calc_loss(loss_op, model(Variable(xv)), Variable(yv)).data.cpu().numpy() for xv, yv in val_gen])
         print("val loss", val_loss)
         if best_loss is not None and val_loss >= best_loss:
             epoch_without_impr += 1
