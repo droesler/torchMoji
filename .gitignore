@@ -99,7 +99,7 @@ ENV/
 .noseids
 
 # pyTorch model
-pytorch_model.bin
+# pytorch_model.bin
 
 # VSCODE
 .vscode/*
