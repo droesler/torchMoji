@@ -36,7 +36,7 @@ except NameError:
     IS_PYTHON2 = False
 
 
-def load_benchmark(path, vocab, extend_with=0):
+def load_benchmark(train_path, val_path, vocab, extend_with=0):
     """ Loads the given benchmark dataset.
 
         Tokenizes the texts using the provided vocabulary, extending it with
@@ -63,29 +63,43 @@ def load_benchmark(path, vocab, extend_with=0):
             maxlen: Maximum length of an input.
     """
     # Pre-processing dataset
-    with open(path, 'rb') as dataset:
+    with open(train_path, 'rb') as dataset:
         if IS_PYTHON2:
-            data = pickle.load(dataset)
+            train_data = pickle.load(dataset)
         else:
-            data = pickle.load(dataset, fix_imports=True)
+            train_data = pickle.load(dataset, fix_imports=True)
+
+    with open(val_path, 'rb') as dataset:
+        if IS_PYTHON2:
+            val_data = pickle.load(dataset)
+        else:
+            val_data = pickle.load(dataset, fix_imports=True)
 
     # Decode data
     try:
-        texts = [unicode(x) for x in data['texts']]
+        train_texts = [unicode(x) for x in train_data['texts']]
     except UnicodeDecodeError:
-        texts = [x.decode('utf-8') for x in data['texts']]
+        train_texts = [x.decode('utf-8') for x in train_data['texts']]
+
+    try:
+        val_texts = [unicode(x) for x in val_data['texts']]
+    except UnicodeDecodeError:
+        val_texts = [x.decode('utf-8') for x in val_data['texts']]
 
     # Extract labels
-    labels = [x['label'] for x in data['info']]
+    train_labels = [x['label'] for x in train_data['info']]
+    val_labels = [x['label'] for x in val_data['info']]   
 
-    batch_size, maxlen = calculate_batchsize_maxlen(texts)
+    batch_size, maxlen = calculate_batchsize_maxlen(train_texts + val_texts)
 
     st = SentenceTokenizer(vocab, maxlen)
 
     # Split up dataset. Extend the existing vocabulary with up to extend_with
     # tokens from the training dataset.
-    texts, labels, added = st.split_train_val_test(texts,
-                                                   labels,
+    texts, labels, added = st.split_train_val_test(train_texts,
+                                                   val_texts,
+                                                   train_labels,
+                                                   val_labels,
                                                    extend_with=extend_with)
     return {'texts': texts,
             'labels': labels,
@@ -362,7 +376,7 @@ def evaluate_using_acc(model, test_gen):
     for i, data in enumerate(test_gen):
         x, y = data
         outs = model(x)
-        if model.nb_classes > 2:
+        if model.nb_classes >= 2:
             pred = torch.max(outs, 1)[1]
             acc = accuracy_score(y.squeeze().numpy(), pred.squeeze().numpy())
         else:
@@ -533,7 +547,7 @@ def fit_model(model, loss_op, optim_op, train_gen, val_gen, epochs,
             output = model(X_train)
             loss = calc_loss(loss_op, output, y_train)
             loss.backward()
-            clip_grad_norm(model.parameters(), 1)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
             optim_op.step()
 
             acc = evaluate_using_acc(model, [(X_train.data, y_train.data)])

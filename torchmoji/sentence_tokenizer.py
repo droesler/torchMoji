@@ -134,12 +134,13 @@ class SentenceTokenizer():
                 tokens.append(self.unknown_value)
         return tokens
 
-    def split_train_val_test(self, sentences, info_dicts,
+    def split_train_val_test(self, train_sentences, val_sentences, train_info_dicts, val_info_dicts,
                              split_parameter=[0.7, 0.1, 0.2], extend_with=0):
         """ Splits given sentences into three different datasets: training,
             validation and testing.
 
         # Arguments:
+            # FIRST TWO MODDED FOR SARCASM FINE TUNING!!
             sentences: The sentences to be tokenized.
             info_dicts: A list of dicts that contain information about each
                 sentence (e.g. a label).
@@ -161,33 +162,46 @@ class SentenceTokenizer():
             the embedding layer of the model accordingly.
         """
 
-        # If passed three lists, use those directly
-        if isinstance(split_parameter, list) and \
-                all(isinstance(x, list) for x in split_parameter) and \
-                len(split_parameter) == 3:
+        # # If passed three lists, use those directly
+        # if isinstance(split_parameter, list) and \
+        #         all(isinstance(x, list) for x in split_parameter) and \
+        #         len(split_parameter) == 3:
 
-            # Helper function to verify provided indices are numbers in range
-            def verify_indices(inds):
-                return list(filter(lambda i: isinstance(i, numbers.Number)
-                            and i < len(sentences), inds))
+        #     # Helper function to verify provided indices are numbers in range
+        #     def verify_indices(inds):
+        #         return list(filter(lambda i: isinstance(i, numbers.Number)
+        #                     and i < len(sentences), inds))
 
-            ind_train = verify_indices(split_parameter[0])
-            ind_val = verify_indices(split_parameter[1])
-            ind_test = verify_indices(split_parameter[2])
-        else:
-            # Split sentences and dicts
-            ind = list(range(len(sentences)))
-            ind_train, ind_test = train_test_split(ind, test_size=split_parameter[2])
-            ind_train, ind_val = train_test_split(ind_train, test_size=split_parameter[1])
+        #     ind_train = verify_indices(split_parameter[0])
+        #     ind_val = verify_indices(split_parameter[1])
+        #     ind_test = verify_indices(split_parameter[2])
+        # else:
+        #     # Split sentences and dicts
+        #     ind = list(range(len(sentences)))
+        #     ind_train, ind_test = train_test_split(ind, test_size=split_parameter[2])
+        #     ind_train, ind_val = train_test_split(ind_train, test_size=split_parameter[1])
 
-        # Map indices to data
-        train = np.array([sentences[x] for x in ind_train])
-        test = np.array([sentences[x] for x in ind_test])
-        val = np.array([sentences[x] for x in ind_val])
+        # # Map indices to data
+        # train = np.array([sentences[x] for x in ind_train])
+        # test = np.array([sentences[x] for x in ind_test])
+        # val = np.array([sentences[x] for x in ind_val])
 
-        info_train = np.array([info_dicts[x] for x in ind_train])
-        info_test = np.array([info_dicts[x] for x in ind_test])
-        info_val = np.array([info_dicts[x] for x in ind_val])
+        # info_train = np.array([info_dicts[x] for x in ind_train])
+        # info_test = np.array([info_dicts[x] for x in ind_test])
+        # info_val = np.array([info_dicts[x] for x in ind_val])
+
+        # info_train = np.array([info_dicts[x] for x in ind_train])
+        # info_test = np.array([info_dicts[x] for x in ind_test])
+        # info_val = np.array([info_dicts[x] for x in ind_val])
+
+        # Modded for train and val being passed as arguments. Test is same as val.
+        train = np.array([sent for sent in train_sentences])
+        test = np.array([sent for sent in val_sentences])
+        val = np.array([sent for sent in val_sentences])
+
+        info_train = np.array([label for label in train_info_dicts])
+        info_test = np.array([label for label in val_info_dicts])
+        info_val = np.array([label for label in val_info_dicts])
 
         added = 0
         # Extend vocabulary with training set tokens

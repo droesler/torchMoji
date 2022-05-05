@@ -213,7 +213,7 @@ class TorchMoji(nn.Module):
 
         # Embed with an activation function to bound the values of the embeddings
         x = self.embed(packed_input.data)
-        x = nn.Tanh()(x)
+        x = torch.tanh(x)
 
         # pyTorch 2D dropout2d operate on axis 1 which is fine for us
         x = self.embed_dropout(x)
