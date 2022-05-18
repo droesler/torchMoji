@@ -100,11 +100,13 @@ class WordGenerator():
     def check_ascii(self, word):
         """ Returns whether a word is ASCII """
 
-        try:
-            word.decode('ascii')
-            return True
-        except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
-            return False
+        # try:
+        #     word.decode('ascii')
+        #     return True
+        # except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
+        #     return False
+        return len(word) == len(word.encode())
+
 
     def convert_unicode_punctuation(self, word):
         word_converted_punct = []
