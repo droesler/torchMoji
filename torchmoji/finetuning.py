@@ -92,12 +92,7 @@ def load_benchmark(train_path, val_path, vocab, extend_with=0):
 
     batch_size, maxlen = calculate_batchsize_maxlen(train_texts + val_texts)
 
-    custom_wordgen = TweetWordGenerator(None, wanted_emojis=None, english_words=None,
-                     non_english_user_set=None, allow_unicode_text=True,
-                     ignore_retweets=False, ignore_url_tweets=False,
-                     ignore_mention_tweets=False)
-
-    st = SentenceTokenizer(vocab, maxlen, custom_wordgen=custom_wordgen)
+    st = SentenceTokenizer(vocab, maxlen)
 
     # Split up dataset. Extend the existing vocabulary with up to extend_with
     # tokens from the training dataset.

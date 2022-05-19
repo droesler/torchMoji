@@ -206,10 +206,7 @@ class SentenceTokenizer():
         added = 0
         # Extend vocabulary with training set tokens
         if extend_with > 0:
-            wg = TweetWordGenerator(train, wanted_emojis=None, english_words=None,
-                     non_english_user_set=None, allow_unicode_text=True,
-                     ignore_retweets=False, ignore_url_tweets=False,
-                     ignore_mention_tweets=False)
+            wg = WordGenerator(train)
             vb = VocabBuilder(wg)
             vb.count_all_words()
             added = extend_vocab(self.vocabulary, vb, max_tokens=extend_with)
