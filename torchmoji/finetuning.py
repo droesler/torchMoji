@@ -36,7 +36,7 @@ except NameError:
     IS_PYTHON2 = False
 
 
-def load_benchmark(train_path, val_path, vocab, extend_with=0):
+def load_benchmark(path, vocab, extend_with=0):
     """ Loads the given benchmark dataset.
 
         Tokenizes the texts using the provided vocabulary, extending it with
@@ -63,43 +63,29 @@ def load_benchmark(train_path, val_path, vocab, extend_with=0):
             maxlen: Maximum length of an input.
     """
     # Pre-processing dataset
-    with open(train_path, 'rb') as dataset:
+    with open(path, 'rb') as dataset:
         if IS_PYTHON2:
-            train_data = pickle.load(dataset)
+            data = pickle.load(dataset)
         else:
-            train_data = pickle.load(dataset, fix_imports=True)
-
-    with open(val_path, 'rb') as dataset:
-        if IS_PYTHON2:
-            val_data = pickle.load(dataset)
-        else:
-            val_data = pickle.load(dataset, fix_imports=True)
+            data = pickle.load(dataset, fix_imports=True)
 
     # Decode data
     try:
-        train_texts = [unicode(x) for x in train_data['texts']]
+        texts = [unicode(x) for x in data['texts']]
     except UnicodeDecodeError:
-        train_texts = [x.decode('utf-8') for x in train_data['texts']]
-
-    try:
-        val_texts = [unicode(x) for x in val_data['texts']]
-    except UnicodeDecodeError:
-        val_texts = [x.decode('utf-8') for x in val_data['texts']]
+        texts = [x.decode('utf-8') for x in data['texts']]
 
     # Extract labels
-    train_labels = [x['label'] for x in train_data['info']]
-    val_labels = [x['label'] for x in val_data['info']]   
+    labels = [x['label'] for x in data['info']] 
 
-    batch_size, maxlen = calculate_batchsize_maxlen(train_texts + val_texts)
+    batch_size, maxlen = calculate_batchsize_maxlen(texts)
 
     st = SentenceTokenizer(vocab, maxlen)
 
     # Split up dataset. Extend the existing vocabulary with up to extend_with
     # tokens from the training dataset.
-    texts, labels, added = st.split_train_val_test(train_texts,
-                                                   val_texts,
-                                                   train_labels,
-                                                   val_labels,
+    texts, labels, added = st.split_train_val_test(texts,
+                                                   labels,
                                                    extend_with=extend_with)
     return {'texts': texts,
             'labels': labels,
