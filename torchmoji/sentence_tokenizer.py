@@ -177,8 +177,8 @@ class SentenceTokenizer():
         else:
             # Split sentences and dicts
             ind = list(range(len(sentences)))
-            ind_train, ind_test = train_test_split(ind, test_size=split_parameter[2])
-            ind_train, ind_val = train_test_split(ind_train, test_size=split_parameter[1])
+            ind_train, ind_test = train_test_split(ind, test_size=split_parameter[2], random_state=2020)
+            ind_train, ind_val = train_test_split(ind_train, test_size=split_parameter[1], random_state=2020)
 
         # Map indices to data
         train = np.array([sentences[x] for x in ind_train])
