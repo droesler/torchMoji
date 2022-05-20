@@ -207,7 +207,7 @@ class SentenceTokenizer():
         # if type(result_infos[0][0]) in [np.double, np.float, np.int64, np.int32, np.uint8]:
         #     result_infos = [torch.from_numpy(label).long() for label in result_infos]
 
-        return result, result_infos, added
+        return result, result_infos, added, vb
 
     def to_sentence(self, sentence_idx):
         """ Converts a tokenized sentence back to a list of words.
