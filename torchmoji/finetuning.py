@@ -91,8 +91,7 @@ def load_benchmark(path, vocab, extend_with=0):
             'labels': labels,
             'added': added,
             'batch_size': batch_size,
-            'maxlen': maxlen},
-            new_vocab
+            'maxlen': maxlen}, new_vocab
 
 
 def calculate_batchsize_maxlen(texts):
