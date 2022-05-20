@@ -84,14 +84,15 @@ def load_benchmark(path, vocab, extend_with=0):
 
     # Split up dataset. Extend the existing vocabulary with up to extend_with
     # tokens from the training dataset.
-    texts, labels, added = st.split_train_val_test(texts,
+    texts, labels, added, new_vocab = st.split_train_val_test(texts,
                                                    labels,
                                                    extend_with=extend_with)
     return {'texts': texts,
             'labels': labels,
             'added': added,
             'batch_size': batch_size,
-            'maxlen': maxlen}
+            'maxlen': maxlen},
+            new_vocab
 
 
 def calculate_batchsize_maxlen(texts):
